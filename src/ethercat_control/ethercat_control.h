@@ -26,6 +26,8 @@ typedef struct {
   uint64_t cycle_time = 0;
   std::vector<int32_t> exclude_slave_list;
   bool enable_servo = false;
+  std::string thread_sched_policy;
+  std::vector<uint32_t> thread_bind_cpus;
 } EtherConfig;
 
 class EthercatControllerError : public std::runtime_error {
@@ -82,10 +84,6 @@ class EthercatController {
 
  private:
   std::atomic_bool stop_flag_ = true;
-  std::string ifname_;
-  uint64_t cycle_time_;
-  bool enable_dc_;
-  std::vector<int32_t> exclude_slave_list_;
 
   std::shared_ptr<EthercatManager> manager_;
   std::unordered_map<int32_t, std::shared_ptr<EtherNode>> ether_nodes_map_;

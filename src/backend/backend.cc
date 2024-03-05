@@ -38,6 +38,9 @@ void InitEtherMaster(const std::string &config_path) {
     cfg.cycle_time = ether_node["enable_dc"].as<bool>();
     cfg.exclude_slave_list =
         ether_node["exclude_slave"].as<std::vector<int32_t>>();
+
+    if (ether_node["thread_bind_cpus"].IsDefined()) cfg.thread_bind_cpus = ether_node["thread_bind_cpus"].as<std::vector<uint32_t>>();
+    if (ether_node["thread_sched_policy"].IsDefined()) cfg.thread_sched_policy = ether_node["thread_sched_policy"].as<std::string>();
   }
 
   g_controller.EtherInitMasterNode(cfg);

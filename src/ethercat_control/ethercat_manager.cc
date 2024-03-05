@@ -7,7 +7,6 @@
 #include <unistd.h>
 
 #include <chrono>
-#include <set>
 ///
 #include <ethercattype.h>
 #include <nicdrv.h>
@@ -31,8 +30,11 @@ static const unsigned EC_TIMEOUTMON = 500;
 
 EthercatManager::EthercatManager(const std::string &ifname,
                                  const std::vector<int32_t> &exclude_slave_list,
-                                 bool dc_enable, uint64_t period)
-    : ifname_(ifname), dc_enable_(dc_enable), period_(period) {
+                                 const std::vector<uint32_t>& thread_bind_cpus,
+                                 const std::string& thread_sched_policy,
+                                 bool dc_enable, uint64_t period           
+                                 )
+    : ifname_(ifname), cpu_set_(thread_bind_cpus), thread_sched_policy_(thread_sched_policy), dc_enable_(dc_enable), period_(period) {
   std::for_each(
       exclude_slave_list.begin(), exclude_slave_list.end(),
       [this](int slave_no) { this->exclude_slave_set_.insert(slave_no); });
@@ -41,14 +43,6 @@ EthercatManager::EthercatManager(const std::string &ifname,
 EthercatManager::~EthercatManager() {
   if (stop_flag_.load()) {
     ReleaseMasterNode();
-  }
-}
-
-void EthercatManager::InitEthercatManager() {
-  if (InitSoem()) {
-    ETHER_INFO("period_: {}ns, dc_enable_: {}.", period_, dc_enable_);
-  } else {
-    throw EthercatError("Could not initialize SOEM");
   }
 }
 
@@ -253,23 +247,6 @@ bool EthercatManager::EnableOP() {
   return true;
 }
 
-bool EthercatManager::InitSoem() {
-  if (!InitMasterNode())
-    return false;
-  if (!EnablePreSafeOP())
-    return false;
-  if (!ConfigSlaveNode())
-    return false;
-  if (!EnableDC())
-    return false;
-  if (!EnableSafeOP())
-    return false;
-  if (!EnableOP())
-    return false;
-
-  return true;
-}
-
 int64_t EthercatManager::CalcDcPiSync(int64_t _refTime, int64_t _cycleTime,
                                       int64_t _shiftTime) {
   static double kP = 0.05, kI = 0.01;
@@ -294,7 +271,7 @@ int64_t EthercatManager::CalcDcPiSync(int64_t _refTime, int64_t _cycleTime,
   return adjTime;
 }
 
-void SetNameForCurrentThread(const std::string &name) {
+static void SetNameForCurrentThread(const std::string &name) {
   if (name.size() < 15) {
     pthread_setname_np(pthread_self(), name.data());
   } else {
@@ -304,10 +281,76 @@ void SetNameForCurrentThread(const std::string &name) {
   }
 }
 
+static void BindCpuForCurrentThread(const std::vector<uint32_t>& cpu_set) {
+  if (cpu_set.empty()) return;
+
+  static const uint32_t max_cpu_idx = std::thread::hardware_concurrency();
+  for (auto cpu_idx : cpu_set) {
+    if (cpu_idx >= max_cpu_idx) {
+      return;
+    }
+  }
+
+  cpu_set_t cpuset;
+  CPU_ZERO(&cpuset);
+  for (auto cpu_idx : cpu_set) {
+    CPU_SET(cpu_idx, &cpuset);
+  }
+  pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
+}
+
+static void SetCpuSchedForCurrentThread(std::string_view sched) {
+  if (sched.empty()) return;
+
+  if (sched == "SCHED_OTHER") {
+    sched_param param;
+    param.sched_priority = 0;
+    pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
+  } else {
+    auto pos = sched.find_first_of(':');
+
+    if (pos == std::string_view::npos || pos == sched.size() - 1) {
+      ETHER_ERROR("Invalid sched parm '{}'", sched);
+      return;
+    }
+    auto sched_policy_str = sched.substr(0, pos);
+
+    int policy;
+
+    if (sched_policy_str == "SCHED_FIFO") {
+      policy = SCHED_FIFO;
+    } else if (sched_policy_str == "SCHED_RR") {
+      policy = SCHED_RR;
+    } else {
+      ETHER_ERROR("Invalid sched parm '{}'", sched);
+      return;
+    }
+
+    int priority_max = sched_get_priority_max(policy);
+    int priority_min = sched_get_priority_min(policy);
+
+    struct sched_param param;
+    auto sched_priority_str = sched.substr(pos + 1);
+    param.sched_priority = atoi(sched_priority_str.data());
+    if (param.sched_priority < priority_min || param.sched_priority > priority_max) {
+      return;
+    }
+
+    pthread_setschedparam(pthread_self(), policy, &param);
+  }
+}
+
+
+
 void EthercatManager::HandleErrors() {
   // set thread name
   std::string name = "etherHandleErrors";
   SetNameForCurrentThread(name);
+  // // bind cpu core
+  BindCpuForCurrentThread(cpu_set_);
+  // set thread priority
+  SetCpuSchedForCurrentThread(thread_sched_policy_);
+
 
   std::this_thread::sleep_for(std::chrono::nanoseconds(20 * period_));
 

@@ -16,7 +16,6 @@ SlaveNode::SlaveNode(std::weak_ptr<EthercatManager> manager, int32_t slave_no)
 SlaveNode::~SlaveNode() {}
 
 void SlaveNode::InitSlaveNode() {
-  ETHER_INFO("init slave node pdo map and data.");
   // init slave node
   InitSlaveStatus();
   // map pdo

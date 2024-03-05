@@ -20,6 +20,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <set>
 
 #include "ethercat_sem.h"
 
@@ -37,8 +38,11 @@ class EthercatManager {
  public:
   EthercatManager(const std::string &ifname,
                   const std::vector<int32_t> &exclude_slave_list,
+                  const std::vector<uint32_t>& thread_bind_cpus,
+                  const std::string& thread_sched_policy,
                   bool dc_enable = false,
-                  uint64_t period = 1000000 /* default 1ms */);
+                  uint64_t period = 1000000 /* default 1ms */
+                  );
   virtual ~EthercatManager();
 
   int GetSlaveNum() const;
@@ -48,10 +52,6 @@ class EthercatManager {
                  uint16_t &ibits_size) const;
   int64_t CalcDcPiSync(int64_t _refTime, int64_t _cycleTime,
                        int64_t _shiftTime);
-  void InitEthercatManager();
-
- protected:
-  bool InitSoem();
 
  public:
   bool InitMasterNode();
@@ -107,6 +107,12 @@ class EthercatManager {
   bool dc_enable_ = false;
   // exclude first slave
   std::unordered_set<int> exclude_slave_set_;
+  // thread bind cpus
+  std::string thread_sched_policy_;
+  // thread sched policy
+  std::vector<uint32_t> cpu_set_;
+
+private:
   // workcount
   int sent = 0;
   int wkc = 0;

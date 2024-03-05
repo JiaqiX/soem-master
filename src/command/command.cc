@@ -87,26 +87,17 @@ void Command::MasterControl(const std::vector<std::string> &paramters) {
   if (paramters.empty())
     return;
   std::string subCmd = paramters[0];
-  if (subCmd == "pre_safe_op") {
+  if (subCmd == "start") {
     EnablePreSafeOP();
-  } else if (subCmd == "config_slave") {
     ConfigSlaveNode();
-  } else if (subCmd == "dc") {
     EnableDC();
-  } else if (subCmd == "safe_op") {
     EnableSafeOP();
-  } else if (subCmd == "op") {
     EnableOP();
-  } else if (subCmd == "start") {
     StartEther();
   } else if (subCmd == "stop") {
     StopEther();
-  } else if (subCmd == "init") {
-    EnablePreSafeOP();
-    ConfigSlaveNode();
-    EnableDC();
-    EnableSafeOP();
-    EnableOP();
+  } else {
+    std::cout << "please check your command." << std::endl;
   }
 }
 

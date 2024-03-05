@@ -32,12 +32,8 @@ EthercatController::EthercatController() {}
 EthercatController::~EthercatController() { EtherStop(); }
 
 void EthercatController::EtherInitMasterNode(const EtherConfig &cfg) {
-  ifname_ = cfg.ifname;
-  enable_dc_ = cfg.enable_dc;
-  cycle_time_ = cfg.cycle_time;
-  exclude_slave_list_ = cfg.exclude_slave_list;
-  manager_ = std::make_shared<EthercatManager>(ifname_, exclude_slave_list_,
-                                               enable_dc_, cycle_time_);
+  manager_ = std::make_shared<EthercatManager>(cfg.ifname, cfg.exclude_slave_list,
+                                               cfg.thread_bind_cpus, cfg.thread_sched_policy, cfg.enable_dc, cfg.cycle_time);
 
   manager_->RegisterCallback(
       std::bind(&EthercatController::DataCallback, this));
@@ -47,7 +43,7 @@ void EthercatController::EtherInitMasterNode(const EtherConfig &cfg) {
   ETHER_INFO(
       "parse ethercat cfg info: ifname: {}, cycle_time: {}, enable_dc: "
       "{}, exclude_slave_list: [{}]",
-      ifname_, cycle_time_, enable_dc_, Display(exclude_slave_list_));
+      cfg.ifname,  cfg.cycle_time,  cfg.enable_dc, Display(cfg.exclude_slave_list));
 }
 
 void EthercatController::EtherRegisterNode(int32_t slave_no,
