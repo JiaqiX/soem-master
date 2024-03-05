@@ -127,6 +127,7 @@ void EthercatManager::ReleaseMasterNode() {
 }
 
 bool EthercatManager::EnablePreSafeOP() {
+  ETHER_INFO("enable pre safe op.");
   for (auto cnt : slave_list_) {
     if (ec_statecheck(cnt, EC_STATE_PRE_OP, EC_TIMEOUTSTATE * 4) !=
         EC_STATE_PRE_OP) {
@@ -139,6 +140,7 @@ bool EthercatManager::EnablePreSafeOP() {
   return true;
 }
 bool EthercatManager::ConfigSlaveNode() {
+  ETHER_INFO("config slave node.");
 
   SlaveConfig();
 
@@ -150,6 +152,7 @@ bool EthercatManager::ConfigSlaveNode() {
 bool EthercatManager::EnableDC() {
   // locates dc slaves
   if (dc_enable_) {
+    ETHER_INFO("enable dc.");
     ec_configdc();
     for (int cnt = 1; cnt <= ec_slavecount; cnt++) {
       ec_dcsync0(cnt, TRUE, period_, 0);
@@ -158,6 +161,7 @@ bool EthercatManager::EnableDC() {
   return true;
 }
 bool EthercatManager::EnableSafeOP() {
+  ETHER_INFO("enable safe op.");
   for (auto cnt : slave_list_) {
     if (ec_statecheck(cnt, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4) !=
         EC_STATE_SAFE_OP) {
@@ -171,7 +175,7 @@ bool EthercatManager::EnableSafeOP() {
 }
 
 bool EthercatManager::EnableOP() {
-
+  ETHER_INFO("enable op.");
   expected_wkc = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC -
                  exclude_slave_set_.size();
 
@@ -212,9 +216,9 @@ bool EthercatManager::EnableOP() {
   ec_readstate();
   for (int cnt = 1; cnt <= ec_slavecount; cnt++) {
     ETHER_INFO(
-        "\nSlave:{}\n Name:{}\n Output size: {}bits\n Input size: {}bits\n "
+        "Slave:{}\n Name:{}\n Output size: {}bits\n Input size: {}bits\n "
         "State: {}\n Delay: {}[ns]\n Has DC: {}\n config address: {}\n alias "
-        "address: {}\n",
+        "address: {}",
         cnt, ec_slave[cnt].name, ec_slave[cnt].Obits, ec_slave[cnt].Ibits,
         ec_slave[cnt].state, ec_slave[cnt].pdelay, ec_slave[cnt].hasdc,
         ec_slave[cnt].configadr, ec_slave[cnt].aliasadr);

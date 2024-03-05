@@ -62,6 +62,7 @@ static int SlavePDOSetup(uint16_t slave) {
   u8val = (uint8_t)0;
   WriteSDO(slave, 0x1C12, 0, u8val);
   for (auto [index, addr] : rxpdo_map_) {
+    ETHER_INFO("rxpdo map, index: {}, addr: 0x{:4x}", index, addr);
     WriteSDO(slave, 0x1C12, index, (uint16_t)addr);
   }
 
@@ -80,6 +81,7 @@ static int SlavePDOSetup(uint16_t slave) {
   u8val = (uint8_t)0;
   WriteSDO(slave, 0x1C13, 0, u8val);
   for (auto [index, addr] : txpdo_map_) {
+    ETHER_INFO("txpdo map, index: {}, addr: 0x{:4x}", index, addr);
     WriteSDO(slave, 0x1C13, index, (uint16_t)addr);
   }
   u8val = (uint8_t)txpdo_map_.size();
@@ -116,11 +118,13 @@ void RegisterEtherNode(int32_t slave_no) {
 }
 //
 void SetEtherNodeRxPDOMap(int32_t slave_no, uint32_t index, uint16_t addr) {
+  ETHER_INFO("map rxpdo address: {}, index: {}, slave_no: {}", addr, index, slave_no);
   g_controller.EtherSetSlaveNodeRxPDOMap(slave_no, index, addr);
 }
 //
 void SetEtherNodeTxPDOMap(int32_t slave_no, uint32_t index, uint16_t addr) {
-  g_controller.EtherSetSlaveNodeRxPDOMap(slave_no, index, addr);
+  ETHER_INFO("map txpdo address: {}, index: {}, slave_no: {}", addr, index, slave_no);
+  g_controller.EtherSetSlaveNodeTxPDOMap(slave_no, index, addr);
 }
 //
 void EnablePreSafeOP() { g_controller.EtherEnablePreSafeOP(); }
@@ -143,20 +147,16 @@ std::string PrintEtherPDOMap(int32_t slave_no) {
 
   std::stringstream ss;
 
-  ss << "TXPDO:\n";
-  ss << "index\tsub\tbitlen\toffset\ttype\n";
-  for (auto [field_name, info] : slave_node->txpdo_assign_map_) {
-    ss << info.index << "\t" << info.sub_index << "\t" << info.bit_len << "\t"
-       << info.offset << "\t" << info.data_type << "\n";
+  ss << "TXPDO:" << std::endl;
+  ss << "name\tindex:sub\tbitlen\toffset\ttype" << std::endl;
+  for (auto info: slave_node->txpdo_assign_vec_) {
+    ss << std::format("{}\t0x{:4x}:0x{:2x}\t{}\t{}\t{}", info.name, info.index, info.sub_index, info.bit_len, info.offset, info.data_type) << std::endl;
   }
 
-  ss << "\n";
-
-  ss << "RXPDO:\n";
-  ss << "index\tsub\tbitlen\toffset\ttype\n";
-  for (auto [field_name, info] : slave_node->rxpdo_assign_map_) {
-    ss << info.index << "\t" << info.sub_index << "\t" << info.bit_len << "\t"
-       << info.offset << "\t" << info.data_type << "\n";
+  ss << "RXPDO:" << std::endl;
+  ss << "name\tindex:sub\tbitlen\toffset\ttype" << std::endl;
+  for (auto info: slave_node->rxpdo_assign_vec_) {
+    ss << std::format("{}\t0x{:4x}:0x{:2x}\t{}\t{}\t{}", info.name, info.index, info.sub_index, info.bit_len, info.offset, info.data_type) << std::endl;
   }
 
   return ss.str();

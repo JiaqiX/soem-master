@@ -20,12 +20,23 @@ namespace ether_backend {
 
 using namespace ether_control;
 
-typedef struct {
+typedef struct data_info{
+  std::string name;
   uint16_t index;
   uint8_t sub_index;
   uint8_t bit_len;
   uint32_t offset;
   std::string data_type;
+  data_info() {}
+  data_info(const data_info& other) {
+    name = other.name;
+    index = other.index;
+    sub_index = other.sub_index;
+    bit_len = other.bit_len;
+    offset = other.offset;
+    data_type = other.data_type;
+  }
+
 } DataInfo;
 
 class SlaveNodeError : public std::runtime_error {
@@ -89,6 +100,9 @@ private:
 public:
   std::map<std::string, DataInfo> txpdo_assign_map_;
   std::map<std::string, DataInfo> rxpdo_assign_map_;
+
+  std::vector<DataInfo> txpdo_assign_vec_;
+  std::vector<DataInfo> rxpdo_assign_vec_;
 
 private:
   std::mutex mtx_input_;

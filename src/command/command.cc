@@ -144,12 +144,12 @@ void Command::PdoControl(const std::vector<std::string> &paramters) {
   if (subCmd == "rx" && paramters.size() == 4) {
     int32_t slave_no = std::stoi(paramters[1]);
     uint32_t index = std::stoul(paramters[2]);
-    uint16_t addr = std::stoul(paramters[3]);
+    uint16_t addr = std::stoul(paramters[3], 0, 16);
     SetEtherNodeRxPDOMap(slave_no, index, addr);
   } else if (subCmd == "tx" && paramters.size() == 4) {
     int32_t slave_no = std::stoi(paramters[1]);
     uint32_t index = std::stoul(paramters[2]);
-    uint16_t addr = std::stoul(paramters[3]);
+    uint16_t addr = std::stoul(paramters[3], 0, 16);
     SetEtherNodeTxPDOMap(slave_no, index, addr);
   } else {
     std::cout << "please check your command." << std::endl;

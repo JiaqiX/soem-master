@@ -42,6 +42,8 @@ void EthercatController::EtherInitMasterNode(const EtherConfig &cfg) {
   manager_->RegisterCallback(
       std::bind(&EthercatController::DataCallback, this));
 
+  manager_->InitMasterNode();
+
   ETHER_INFO("parse ethercat cfg info: ifname: {}, cycle_time: {}, enable_dc: "
              "{}, exclude_slave_list: [{}]",
              ifname_, cycle_time_, enable_dc_, Display(exclude_slave_list_));
@@ -65,15 +67,30 @@ void EthercatController::EtherSetSlaveNodeRxPDOMap(int32_t slave_no,
                                                    uint16_t addr) {
   slave_rxpdo_map_[slave_no][index] = addr;
 }
-void EthercatController::EtherEnablePreSafeOP() { manager_->EnablePreSafeOP(); }
-void EthercatController::EtherConfigSlaveNode() { manager_->ConfigSlaveNode(); }
-void EthercatController::EtherEnableDC() { manager_->EnableDC(); }
-void EthercatController::EtherEnableSafeOP() { manager_->EnableSafeOP(); }
-void EthercatController::EtherEnableOP() { manager_->EnableOP(); }
-void EthercatController::EtherStart() {
-  if (!stop_flag_.load())
-    return;
+void EthercatController::EtherEnablePreSafeOP() { if (!manager_->EnablePreSafeOP()) {
+  throw EthercatControllerError("enable pre safe op failed.");
+} }
+void EthercatController::EtherConfigSlaveNode() { if (!manager_->ConfigSlaveNode()) {
+  throw EthercatControllerError("config slave node failed.");
+} }
+void EthercatController::EtherEnableDC() { if (!manager_->EnableDC()) {
+  throw EthercatControllerError("enable op failed.");
 
+} }
+void EthercatController::EtherEnableSafeOP() { if (!manager_->EnableSafeOP()) {
+  throw EthercatControllerError("enbale safe op failed.");
+
+} }
+void EthercatController::EtherEnableOP() { if (!manager_->EnableOP()) {
+  throw EthercatControllerError("enable op failed.");
+
+} }
+void EthercatController::EtherStart() {
+  if (!stop_flag_.load()) {
+    ETHER_WARN("ethercat worker loop task already start.");
+    return;
+  }
+  ETHER_INFO("start ethercat worker loop task.");
   stop_flag_.store(false);
 
   cycle_thread_ =
@@ -85,6 +102,9 @@ void EthercatController::EtherStart() {
 void EthercatController::EtherStop() {
   if (stop_flag_.load())
     return;
+  
+  ETHER_INFO("stop ethercat worker loop task.");
+
   stop_flag_.store(true);
 
   manager_->SetStopFlag(true);
@@ -97,6 +117,7 @@ void EthercatController::EtherStop() {
     handle_error_thread_->join();
   }
 
+  manager_->ReleaseMasterNode();
   manager_.reset();
 }
 
@@ -117,8 +138,7 @@ void EthercatController::WaitUntil(
 }
 
 std::shared_ptr<EtherNode> EthercatController::GetEtherNode(int32_t slave_no) {
-  if (ether_nodes_map_.find(slave_no) == ether_nodes_map_.end() ||
-      stop_flag_.load())
+  if (ether_nodes_map_.find(slave_no) == ether_nodes_map_.end())
     throw EthercatControllerError("can not get ethercat node.");
   return ether_nodes_map_[slave_no];
 }

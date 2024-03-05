@@ -1,5 +1,5 @@
 ethercat:
-  ifname: "enp2s0"
+  ifname: "enp5s0"
   cycle_time: 1000000                           # unit: ns
   enable_dc: true                               # enable dc flag
   exclude_slave: []

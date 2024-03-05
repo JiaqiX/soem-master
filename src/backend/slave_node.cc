@@ -16,6 +16,7 @@ SlaveNode::SlaveNode(std::weak_ptr<EthercatManager> manager, int32_t slave_no)
 SlaveNode::~SlaveNode() {}
 
 void SlaveNode::InitSlaveNode() {
+  ETHER_INFO("init slave node pdo map and data.");
   // init slave node
   InitSlaveStatus();
   // map pdo
@@ -347,18 +348,22 @@ int SlaveNode::PDOAssign(uint8_t tSM, uint16_t PDOassign, int mapoffset,
           if (obj_idx || obj_subidx)
             wkc = ec_readOEsingle(0, obj_subidx, &ODlist, &OElist);
 
+          std::string data_name = OElist.Name[obj_subidx];
+
           DataInfo info;
+          info.name = data_name;
           info.index = obj_idx;
           info.sub_index = obj_subidx;
           info.bit_len = bitlen;
           info.data_type = dtype2string(OElist.DataType[obj_subidx]);
           info.offset = relative_offset;
 
-          std::string data_name = OElist.Name[obj_subidx];
           if (tSM == 3) {
             rxpdo_assign_map_[data_name] = info;
+            rxpdo_assign_vec_.push_back(info);
           } else if (tSM == 4) {
             txpdo_assign_map_[data_name] = info;
+            txpdo_assign_vec_.push_back(info);
           }
           bitoffset += bitlen;
         };
