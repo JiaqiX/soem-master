@@ -3,5 +3,9 @@ ethercat:
   cycle_time: 1000000                           # unit: ns
   enable_dc: true                               # enable dc flag
   exclude_slave: []
-  thread_sched_policy: "SCHED_FIFO:80"
-  thread_bind_cpus: [10]
+  # thread_sched_policy: "SCHED_FIFO:80"
+  # thread_bind_cpus: [10]
+  slave_config:
+    - slave_no: 1
+      txpdo_addr: [0x1a00]
+      rxpdo_addr: [0x1600]

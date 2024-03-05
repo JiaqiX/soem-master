@@ -20,6 +20,18 @@ using std::vector;
 
 namespace ether_control {
 
+typedef struct slave_node_config {
+  int32_t slave_no;
+  std::vector<uint16_t> txpdo_addr;
+  std::vector<uint16_t> rxpdo_addr;
+  slave_node_config() {}
+  slave_node_config(const slave_node_config& other) {
+    slave_no = other.slave_no;
+    txpdo_addr = other.txpdo_addr;
+    rxpdo_addr = other.rxpdo_addr;
+  }
+} SlaveNodeConfig;
+
 typedef struct {
   std::string ifname;
   bool enable_dc = false;
@@ -28,6 +40,7 @@ typedef struct {
   bool enable_servo = false;
   std::string thread_sched_policy;
   std::vector<uint32_t> thread_bind_cpus;
+  std::vector<SlaveNodeConfig> slave_config_list;
 } EtherConfig;
 
 class EthercatControllerError : public std::runtime_error {

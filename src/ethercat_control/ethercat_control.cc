@@ -40,6 +40,16 @@ void EthercatController::EtherInitMasterNode(const EtherConfig &cfg) {
 
   manager_->InitMasterNode();
 
+  // init pdo map by config
+  for (auto slave_cfg: cfg.slave_config_list) {
+    for (int index = 0; index < slave_cfg.txpdo_addr.size(); index++) {
+      slave_txpdo_map_[slave_cfg.slave_no][index] = slave_cfg.txpdo_addr[index];
+    }
+    for (int index = 0; index < slave_cfg.rxpdo_addr.size(); index++) {
+      slave_rxpdo_map_[slave_cfg.slave_no][index] = slave_cfg.rxpdo_addr[index];
+    }
+  }
+
   ETHER_INFO(
       "parse ethercat cfg info: ifname: {}, cycle_time: {}, enable_dc: "
       "{}, exclude_slave_list: [{}]",

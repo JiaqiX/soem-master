@@ -41,6 +41,16 @@ void InitEtherMaster(const std::string &config_path) {
 
     if (ether_node["thread_bind_cpus"].IsDefined()) cfg.thread_bind_cpus = ether_node["thread_bind_cpus"].as<std::vector<uint32_t>>();
     if (ether_node["thread_sched_policy"].IsDefined()) cfg.thread_sched_policy = ether_node["thread_sched_policy"].as<std::string>();
+
+    if (auto slave_cfg_node = ether_node["slave_config"]) {
+      for (const auto& config_itr : slave_cfg_node) {
+        SlaveNodeConfig node_cfg;
+        node_cfg.slave_no = config_itr["slave_no"].as<int32_t>();
+        node_cfg.txpdo_addr = config_itr["txpdo_addr"].as<std::vector<uint16_t>>();
+        node_cfg.rxpdo_addr = config_itr["rxpdo_addr"].as<std::vector<uint16_t>>();
+        cfg.slave_config_list.push_back(node_cfg);
+      }
+    }
   }
 
   g_controller.EtherInitMasterNode(cfg);
