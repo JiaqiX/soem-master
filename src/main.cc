@@ -21,7 +21,7 @@
 #include "log/ethercat_log.h"
 
 void soem_backend(std::string config_path) {
-  ether_backend::InitEtherMaster(config_path);
+  ether_backend::PreInitEther(config_path);
 }
 
 void soem_frontend() {}

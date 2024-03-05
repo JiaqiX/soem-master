@@ -19,7 +19,9 @@ extern ether_control::EthercatController g_controller;
 extern ether_control::EtherConfig g_config;
 
 //
-extern void InitEtherMaster(const std::string &config_path);
+extern void PreInitEther(const std::string &config_path);
+//
+extern void InitEther();
 //
 extern std::string PrintEtherNodeList();
 //
@@ -29,6 +31,8 @@ extern void SetEtherNodeRxPDOMap(int32_t slave_no, uint32_t index,
                                  uint16_t addr);
 extern void SetEtherNodeTxPDOMap(int32_t slave_no, uint32_t index,
                                  uint16_t addr);
+//
+extern void InitSlaveNodes();
 //
 extern void EnablePreSafeOP();
 //

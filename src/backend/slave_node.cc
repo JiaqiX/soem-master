@@ -10,7 +10,6 @@ namespace ether_backend {
 
 SlaveNode::SlaveNode(std::weak_ptr<EthercatManager> manager, int32_t slave_no)
     : EtherNode(manager, slave_no) {
-  ETHER_INFO("node info: slave_no: {}", slave_no_);
 }
 
 SlaveNode::~SlaveNode() {}
@@ -23,6 +22,8 @@ void SlaveNode::InitSlaveNode() {
   // init data
   inputs.resize(ibits_size_ / 8);
   outputs.resize(obits_size_ / 8);
+
+  ETHER_INFO("inputs size: {}, outputs size: {}", ibits_size_ / 8, obits_size_ / 8);
 }
 
 bool SlaveNode::CheckProductCode(uint32_t code) {
@@ -91,23 +92,23 @@ std::string SlaveNode::GetInput(const std::string &field_name) {
   if (txpdo_assign_map_.find(field_name) != txpdo_assign_map_.end()) {
     auto &field_info = txpdo_assign_map_[field_name];
     if (field_info.data_type == "BOOLEAN") {
-      ss << GetInputBool(field_info.offset);
+      ss << fmt::format("{}", GetInputBool(field_info.offset));
     } else if (field_info.data_type == "INTEGER8") {
-      ss << GetInputInt8(field_info.offset);
+      ss << fmt::format("{}", GetInputInt8(field_info.offset));
     } else if (field_info.data_type == "INTEGER16") {
-      ss << GetInputInt16(field_info.offset);
+      ss << fmt::format("{}", GetInputInt16(field_info.offset));
     } else if (field_info.data_type == "INTEGER32") {
-      ss << GetInputInt32(field_info.offset);
+      ss << fmt::format("{}", GetInputInt32(field_info.offset));
     } else if (field_info.data_type == "INTEGER64") {
-      ss << GetInputInt64(field_info.offset);
+      ss << fmt::format("{}", GetInputInt64(field_info.offset));
     } else if (field_info.data_type == "UNSIGNED8") {
-      ss << GetInputUint8(field_info.offset);
+      ss << fmt::format("{}", GetInputUint8(field_info.offset));
     } else if (field_info.data_type == "UNSIGNED16") {
-      ss << GetInputUint16(field_info.offset);
+      ss << fmt::format("{}", GetInputUint16(field_info.offset));
     } else if (field_info.data_type == "UNSIGNED32") {
-      ss << GetInputUint32(field_info.offset);
+      ss << fmt::format("{}", GetInputUint32(field_info.offset));
     } else if (field_info.data_type == "UNSIGNED64") {
-      ss << GetInputUint64(field_info.offset);
+      ss << fmt::format("{}", GetInputUint64(field_info.offset));
     }
   }
   return ss.str();
@@ -143,44 +144,24 @@ void SlaveNode::SetOutputUint64(int32_t offset, uint64_t val) {
 
 void SlaveNode::SetOutput(const std::string &field_name, std::string strVal) {
   std::stringstream ss(strVal);
-  if (txpdo_assign_map_.find(field_name) != txpdo_assign_map_.end()) {
-    auto &field_info = txpdo_assign_map_[field_name];
-    if (field_info.data_type == "BOOLEAN") {
-      bool val;
-      ss >> val;
-      SetOutputBool(field_info.offset, std::any_cast<bool>(val));
-    } else if (field_info.data_type == "INTEGER8") {
-      int8_t val;
-      ss >> val;
-      SetOutputInt8(field_info.offset, std::any_cast<int8_t>(val));
+  if (rxpdo_assign_map_.find(field_name) != rxpdo_assign_map_.end()) {
+    auto &field_info = rxpdo_assign_map_[field_name];
+    if (field_info.data_type == "INTEGER8") {
+      SetOutputInt8(field_info.offset, std::stoi(strVal));
     } else if (field_info.data_type == "INTEGER16") {
-      int16_t val;
-      ss >> val;
-      SetOutputInt16(field_info.offset, std::any_cast<int16_t>(val));
+      SetOutputInt16(field_info.offset, std::stoi(strVal));
     } else if (field_info.data_type == "INTEGER32") {
-      int32_t val;
-      ss >> val;
-      SetOutputInt32(field_info.offset, std::any_cast<int32_t>(val));
+      SetOutputInt32(field_info.offset, std::stoi(strVal));
     } else if (field_info.data_type == "INTEGER64") {
-      int64_t val;
-      ss >> val;
-      SetOutputInt64(field_info.offset, std::any_cast<int64_t>(val));
+      SetOutputInt64(field_info.offset, std::stoll(strVal));
     } else if (field_info.data_type == "UNSIGNED8") {
-      uint8_t val;
-      ss >> val;
-      SetOutputUint8(field_info.offset, std::any_cast<uint8_t>(val));
+      SetOutputUint8(field_info.offset, std::stoul(strVal));
     } else if (field_info.data_type == "UNSIGNED16") {
-      uint16_t val;
-      ss >> val;
-      SetOutputUint16(field_info.offset, std::any_cast<uint16_t>(val));
+      SetOutputUint16(field_info.offset, std::stoul(strVal));
     } else if (field_info.data_type == "UNSIGNED32") {
-      uint32_t val;
-      ss >> val;
-      SetOutputUint32(field_info.offset, std::any_cast<uint32_t>(val));
+      SetOutputUint32(field_info.offset, std::stoul(strVal));
     } else if (field_info.data_type == "UNSIGNED64") {
-      uint64_t val;
-      ss >> val;
-      SetOutputUint64(field_info.offset, std::any_cast<uint64_t>(val));
+      SetOutputUint64(field_info.offset, std::stoull(strVal));
     }
   }
 }

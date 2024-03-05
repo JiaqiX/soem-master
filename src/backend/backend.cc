@@ -22,7 +22,7 @@ ether_control::EthercatController g_controller;
 ether_control::EtherConfig g_config;
 
 //
-void InitEtherMaster(const std::string &config_path) {
+void PreInitEther(const std::string &config_path) {
   YAML::Node cfg_node;
   try {
     cfg_node = YAML::LoadFile(config_path);
@@ -31,16 +31,15 @@ void InitEtherMaster(const std::string &config_path) {
     exit(EXIT_FAILURE);
   }
 
-  ether_control::EtherConfig cfg;
   if (auto ether_node = cfg_node["ethercat"]) {
-    cfg.ifname = ether_node["ifname"].as<std::string>();
-    cfg.cycle_time = ether_node["cycle_time"].as<uint64_t>();
-    cfg.cycle_time = ether_node["enable_dc"].as<bool>();
-    cfg.exclude_slave_list =
+    g_config.ifname = ether_node["ifname"].as<std::string>();
+    g_config.cycle_time = ether_node["cycle_time"].as<uint64_t>();
+    g_config.cycle_time = ether_node["enable_dc"].as<bool>();
+    g_config.exclude_slave_list =
         ether_node["exclude_slave"].as<std::vector<int32_t>>();
 
-    if (ether_node["thread_bind_cpus"].IsDefined()) cfg.thread_bind_cpus = ether_node["thread_bind_cpus"].as<std::vector<uint32_t>>();
-    if (ether_node["thread_sched_policy"].IsDefined()) cfg.thread_sched_policy = ether_node["thread_sched_policy"].as<std::string>();
+    if (ether_node["thread_bind_cpus"].IsDefined()) g_config.thread_bind_cpus = ether_node["thread_bind_cpus"].as<std::vector<uint32_t>>();
+    if (ether_node["thread_sched_policy"].IsDefined()) g_config.thread_sched_policy = ether_node["thread_sched_policy"].as<std::string>();
 
     if (auto slave_cfg_node = ether_node["slave_config"]) {
       for (const auto& config_itr : slave_cfg_node) {
@@ -48,12 +47,15 @@ void InitEtherMaster(const std::string &config_path) {
         node_cfg.slave_no = config_itr["slave_no"].as<int32_t>();
         node_cfg.txpdo_addr = config_itr["txpdo_addr"].as<std::vector<uint16_t>>();
         node_cfg.rxpdo_addr = config_itr["rxpdo_addr"].as<std::vector<uint16_t>>();
-        cfg.slave_config_list.push_back(node_cfg);
+        g_config.slave_config_list.push_back(node_cfg);
       }
     }
   }
+  g_controller.EtherPreInitMasterNode(g_config);
+}
 
-  g_controller.EtherInitMasterNode(cfg);
+void InitEther() {
+  g_controller.EtherInitMasterNode(g_config);
 }
 
 static int SlavePDOSetup(uint16_t slave) {
@@ -125,7 +127,6 @@ std::string PrintEtherNodeList() {
 void RegisterEtherNode(int32_t slave_no) {
   std::shared_ptr<SlaveNode> node =
       std::make_shared<SlaveNode>(g_controller.GetEtherManager(), slave_no);
-  node->InitSlaveNode();
   g_controller.EtherRegisterNode(slave_no, node, SlavePDOSetup);
 }
 //
@@ -139,6 +140,10 @@ void SetEtherNodeTxPDOMap(int32_t slave_no, uint32_t index, uint16_t addr) {
   ETHER_INFO("map txpdo address: {}, index: {}, slave_no: {}", addr, index,
              slave_no);
   g_controller.EtherSetSlaveNodeTxPDOMap(slave_no, index, addr);
+}
+
+void InitSlaveNodes() {
+  g_controller.EtherInitSlaveNodes();
 }
 //
 void EnablePreSafeOP() { g_controller.EtherEnablePreSafeOP(); }

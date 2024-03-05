@@ -59,9 +59,11 @@ class EthercatController {
   void LoopWorker();
 
  public:
+  void EtherPreInitMasterNode(const EtherConfig &cfg);
   void EtherInitMasterNode(const EtherConfig &cfg);
   void EtherRegisterNode(int32_t slave_no, std::shared_ptr<EtherNode> node_ptr,
                          PO2SOconfigFunc func);
+  void EtherInitSlaveNodes();
 
   void EtherSetSlaveNodeTxPDOMap(int32_t slave_no, uint32_t index,
                                  uint16_t addr);

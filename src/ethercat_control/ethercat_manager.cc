@@ -63,6 +63,8 @@ void EthercatManager::GetStatus(int32_t slave_no, std::string &name,
   eep_id = (uint32_t)ec_slave[slave_no].eep_id;
   eep_rev = (uint32_t)ec_slave[slave_no].eep_rev;
   hasdc = ec_slave[slave_no].hasdc;
+  obits_size = ec_slave[slave_no].Obits;
+  ibits_size = ec_slave[slave_no].Ibits;
 }
 
 bool EthercatManager::InitMasterNode() {

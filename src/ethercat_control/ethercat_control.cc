@@ -31,12 +31,14 @@ std::string Display(const T &container) {
 EthercatController::EthercatController() {}
 EthercatController::~EthercatController() { EtherStop(); }
 
-void EthercatController::EtherInitMasterNode(const EtherConfig &cfg) {
+void EthercatController::EtherPreInitMasterNode(const EtherConfig &cfg) {
   manager_ = std::make_shared<EthercatManager>(cfg.ifname, cfg.exclude_slave_list,
-                                               cfg.thread_bind_cpus, cfg.thread_sched_policy, cfg.enable_dc, cfg.cycle_time);
-
+                                                cfg.thread_bind_cpus, cfg.thread_sched_policy, cfg.enable_dc, cfg.cycle_time);
   manager_->RegisterCallback(
       std::bind(&EthercatController::DataCallback, this));
+}
+
+void EthercatController::EtherInitMasterNode(const EtherConfig &cfg) {
 
   manager_->InitMasterNode();
 
@@ -59,8 +61,16 @@ void EthercatController::EtherInitMasterNode(const EtherConfig &cfg) {
 void EthercatController::EtherRegisterNode(int32_t slave_no,
                                            std::shared_ptr<EtherNode> node_ptr,
                                            PO2SOconfigFunc func) {
+  ETHER_INFO("register slave node: {}", slave_no);
   ether_nodes_map_[slave_no] = node_ptr;
   manager_->SetSlaveConfig(slave_no, func);
+}
+
+
+void EthercatController::EtherInitSlaveNodes() {
+  for (auto [slave_no, node] : ether_nodes_map_) {
+    node->InitSlaveNode();
+  }
 }
 
 void EthercatController::EtherSetSlaveNodeTxPDOMap(int32_t slave_no,
@@ -109,6 +119,7 @@ void EthercatController::EtherStart() {
 
   cycle_thread_ =
       std::make_shared<std::thread>(&EthercatController::LoopWorker, this);
+
   handle_error_thread_ =
       std::make_shared<std::thread>(&EthercatController::HandleErrors, this);
 }
