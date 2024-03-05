@@ -33,17 +33,16 @@ EthercatController::~EthercatController() { EtherStop(); }
 
 void EthercatController::EtherPreInitMasterNode(const EtherConfig &cfg) {
   manager_ = std::make_shared<EthercatManager>(cfg.ifname, cfg.exclude_slave_list,
-                                                cfg.thread_bind_cpus, cfg.thread_sched_policy, cfg.enable_dc, cfg.cycle_time);
+                                               cfg.thread_bind_cpus, cfg.thread_sched_policy, cfg.enable_dc, cfg.cycle_time);
   manager_->RegisterCallback(
       std::bind(&EthercatController::DataCallback, this));
 }
 
 void EthercatController::EtherInitMasterNode(const EtherConfig &cfg) {
-
   manager_->InitMasterNode();
 
   // init pdo map by config
-  for (auto slave_cfg: cfg.slave_config_list) {
+  for (auto slave_cfg : cfg.slave_config_list) {
     for (int index = 0; index < slave_cfg.txpdo_addr.size(); index++) {
       slave_txpdo_map_[slave_cfg.slave_no][index] = slave_cfg.txpdo_addr[index];
     }
@@ -65,7 +64,6 @@ void EthercatController::EtherRegisterNode(int32_t slave_no,
   ether_nodes_map_[slave_no] = node_ptr;
   manager_->SetSlaveConfig(slave_no, func);
 }
-
 
 void EthercatController::EtherInitSlaveNodes() {
   for (auto [slave_no, node] : ether_nodes_map_) {

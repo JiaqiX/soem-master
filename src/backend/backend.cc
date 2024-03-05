@@ -42,7 +42,7 @@ void PreInitEther(const std::string &config_path) {
     if (ether_node["thread_sched_policy"].IsDefined()) g_config.thread_sched_policy = ether_node["thread_sched_policy"].as<std::string>();
 
     if (auto slave_cfg_node = ether_node["slave_config"]) {
-      for (const auto& config_itr : slave_cfg_node) {
+      for (const auto &config_itr : slave_cfg_node) {
         SlaveNodeConfig node_cfg;
         node_cfg.slave_no = config_itr["slave_no"].as<int32_t>();
         node_cfg.txpdo_addr = config_itr["txpdo_addr"].as<std::vector<uint16_t>>();

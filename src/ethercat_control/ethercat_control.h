@@ -25,7 +25,7 @@ typedef struct slave_node_config {
   std::vector<uint16_t> txpdo_addr;
   std::vector<uint16_t> rxpdo_addr;
   slave_node_config() {}
-  slave_node_config(const slave_node_config& other) {
+  slave_node_config(const slave_node_config &other) {
     slave_no = other.slave_no;
     txpdo_addr = other.txpdo_addr;
     rxpdo_addr = other.rxpdo_addr;
