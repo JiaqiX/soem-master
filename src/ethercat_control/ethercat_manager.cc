@@ -30,10 +30,9 @@ static const unsigned EC_TIMEOUTMON = 500;
 
 EthercatManager::EthercatManager(const std::string &ifname,
                                  const std::vector<int32_t> &exclude_slave_list,
-                                 const std::vector<uint32_t>& thread_bind_cpus,
-                                 const std::string& thread_sched_policy,
-                                 bool dc_enable, uint64_t period           
-                                 )
+                                 const std::vector<uint32_t> &thread_bind_cpus,
+                                 const std::string &thread_sched_policy,
+                                 bool dc_enable, uint64_t period)
     : ifname_(ifname), cpu_set_(thread_bind_cpus), thread_sched_policy_(thread_sched_policy), dc_enable_(dc_enable), period_(period) {
   std::for_each(
       exclude_slave_list.begin(), exclude_slave_list.end(),
@@ -281,7 +280,7 @@ static void SetNameForCurrentThread(const std::string &name) {
   }
 }
 
-static void BindCpuForCurrentThread(const std::vector<uint32_t>& cpu_set) {
+static void BindCpuForCurrentThread(const std::vector<uint32_t> &cpu_set) {
   if (cpu_set.empty()) return;
 
   static const uint32_t max_cpu_idx = std::thread::hardware_concurrency();
@@ -340,8 +339,6 @@ static void SetCpuSchedForCurrentThread(std::string_view sched) {
   }
 }
 
-
-
 void EthercatManager::HandleErrors() {
   // set thread name
   std::string name = "etherHandleErrors";
@@ -350,7 +347,6 @@ void EthercatManager::HandleErrors() {
   BindCpuForCurrentThread(cpu_set_);
   // set thread priority
   SetCpuSchedForCurrentThread(thread_sched_policy_);
-
 
   std::this_thread::sleep_for(std::chrono::nanoseconds(20 * period_));
 

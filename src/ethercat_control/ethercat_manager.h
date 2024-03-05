@@ -14,13 +14,13 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <thread>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <set>
 
 #include "ethercat_sem.h"
 
@@ -38,11 +38,11 @@ class EthercatManager {
  public:
   EthercatManager(const std::string &ifname,
                   const std::vector<int32_t> &exclude_slave_list,
-                  const std::vector<uint32_t>& thread_bind_cpus,
-                  const std::string& thread_sched_policy,
+                  const std::vector<uint32_t> &thread_bind_cpus,
+                  const std::string &thread_sched_policy,
                   bool dc_enable = false,
                   uint64_t period = 1000000 /* default 1ms */
-                  );
+  );
   virtual ~EthercatManager();
 
   int GetSlaveNum() const;
@@ -112,7 +112,7 @@ class EthercatManager {
   // thread sched policy
   std::vector<uint32_t> cpu_set_;
 
-private:
+ private:
   // workcount
   int sent = 0;
   int wkc = 0;

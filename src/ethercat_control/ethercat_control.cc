@@ -43,7 +43,7 @@ void EthercatController::EtherInitMasterNode(const EtherConfig &cfg) {
   ETHER_INFO(
       "parse ethercat cfg info: ifname: {}, cycle_time: {}, enable_dc: "
       "{}, exclude_slave_list: [{}]",
-      cfg.ifname,  cfg.cycle_time,  cfg.enable_dc, Display(cfg.exclude_slave_list));
+      cfg.ifname, cfg.cycle_time, cfg.enable_dc, Display(cfg.exclude_slave_list));
 }
 
 void EthercatController::EtherRegisterNode(int32_t slave_no,
