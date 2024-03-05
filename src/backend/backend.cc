@@ -151,7 +151,7 @@ std::string PrintEtherPDOMap(int32_t slave_no) {
   ss << "TXPDO:" << std::endl;
   ss << "name\tindex:sub\tbitlen\toffset\ttype" << std::endl;
   for (auto info : slave_node->txpdo_assign_vec_) {
-    ss << std::format("{}\t0x{:4x}:0x{:2x}\t{}\t{}\t{}", info.name, info.index,
+    ss << fmt::format("{}\t0x{:4x}:0x{:2x}\t{}\t{}\t{}", info.name, info.index,
                       info.sub_index, info.bit_len, info.offset, info.data_type)
        << std::endl;
   }
@@ -159,7 +159,7 @@ std::string PrintEtherPDOMap(int32_t slave_no) {
   ss << "RXPDO:" << std::endl;
   ss << "name\tindex:sub\tbitlen\toffset\ttype" << std::endl;
   for (auto info : slave_node->rxpdo_assign_vec_) {
-    ss << std::format("{}\t0x{:4x}:0x{:2x}\t{}\t{}\t{}", info.name, info.index,
+    ss << fmt::format("{}\t0x{:4x}:0x{:2x}\t{}\t{}\t{}", info.name, info.index,
                       info.sub_index, info.bit_len, info.offset, info.data_type)
        << std::endl;
   }

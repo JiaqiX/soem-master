@@ -33,7 +33,7 @@ namespace ether_control {
 
 #define ETHER_HANDLE_LOG_v1(__lgr__, __lvl__, __clr__, __fmt__, ...)        \
   do {                                                                      \
-    std::string __log_str__ = std::format(__fmt__, ##__VA_ARGS__);          \
+    std::string __log_str__ = fmt::format(__fmt__, ##__VA_ARGS__);          \
     constexpr auto __location__ = std::source_location::current();          \
     __lgr__ << __clr__ << __lvl__ << " file: " << __location__.file_name()  \
             << " line: " << __location__.line()                             \
@@ -44,7 +44,7 @@ namespace ether_control {
 
 #define ETHER_HANDLE_LOG(__lgr__, __lvl__, __clr__, __fmt__, ...)      \
   do {                                                                 \
-    std::string __log_str__ = std::format(__fmt__, ##__VA_ARGS__);     \
+    std::string __log_str__ = fmt::format(__fmt__, ##__VA_ARGS__);     \
     constexpr auto __location__ = std::source_location::current();     \
     __lgr__ << __clr__ << __log_str__ << LOG_CLRSTR_NONE << std::endl; \
   } while (0)
