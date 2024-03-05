@@ -121,7 +121,7 @@ std::string Display(const T &container) {
 std::string PrintEtherNodeList() {
   auto slave_list = g_controller.GetSlaveLists();
 
-  return Display(slave_list);
+  return "[" + Display(slave_list) + "]";
 }
 //
 void RegisterEtherNode(int32_t slave_no) {

@@ -66,6 +66,7 @@ void Command::GetCommand() {
 }
 
 bool Command::ValidCommand() {
+  if (m_command == "\n" || m_command == "") return false;
   if (m_validCommand.find(m_command) == m_validCommand.end()) {
     std::cout << "Invalid Command: " << m_command << std::endl;
     return false;

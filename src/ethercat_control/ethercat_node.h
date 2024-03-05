@@ -44,7 +44,7 @@ class EtherNode {
                                slave_eep_rev_, slave_hasdc_, obits_size_,
                                ibits_size_);
 
-    ETHER_INFO("slave_no: {}, name: {}, config addr: {}, alias_addr: {}, eep_man: {}, eep_id: {}, eep_rev: {}, hasdc: {}, obits size: {}, ibits size: {}", slave_no_, slave_name_, slave_configadr_,
+    ETHER_INFO("slave_no: {}, name: {}, config addr: {:#04x}, alias_addr: {:#04x}, eep_man: {:#08x}, eep_id: {:#08x}, eep_rev: {:#08x}, hasdc: {}, obits size: {}, ibits size: {}", slave_no_, slave_name_, slave_configadr_,
                slave_aliasadr_, slave_eep_man_, slave_eep_id_,
                slave_eep_rev_, slave_hasdc_, obits_size_,
                ibits_size_);
