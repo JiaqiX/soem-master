@@ -8,21 +8,21 @@
  */
 #pragma once
 
-#include "ethercat_com.h"
-#include "ethercat_manager.h"
 #include <cstdint>
 #include <map>
 #include <stdexcept>
+#include "ethercat_com.h"
+#include "ethercat_manager.h"
 
 namespace ether_control {
 
 class EtherNodeError : public std::runtime_error {
-public:
+ public:
   explicit EtherNodeError(const std::string &what) : std::runtime_error(what) {}
 };
 
 class EtherNode {
-public:
+ public:
   EtherNode(std::weak_ptr<EthercatManager> manager, int32_t slave_no)
       : manager_(manager), slave_no_(slave_no) {}
   virtual ~EtherNode() {}
@@ -32,8 +32,9 @@ public:
       throw EtherNodeError("Constructed with expired EthercatManager.");
     }
     if (slave_no_ > manager_.lock()->GetSlaveNum()) {
-      throw EtherNodeError("slave_no is larger than "
-                           "ec_slavecount");
+      throw EtherNodeError(
+          "slave_no is larger than "
+          "ec_slavecount");
     }
 
     manager_.lock()->GetStatus(slave_no_, slave_name_, slave_configadr_,
@@ -50,13 +51,13 @@ public:
   uint32_t GetSlaveEepId() { return slave_eep_id_; }
   uint32_t GetSlaveEepRev() { return slave_eep_rev_; }
 
-public:
+ public:
   virtual void InitSlaveNode() = 0;
   virtual void GetRawInputs() = 0;
   virtual void GetRawOutputs() = 0;
   virtual void WriteRawOutputs() = 0;
 
-protected:
+ protected:
   /** ethercat manager */
   std::weak_ptr<EthercatManager> manager_;
   /** slave no */
@@ -81,4 +82,4 @@ protected:
   uint16_t ibits_size_;
 };
 
-} // namespace ether_control
+}  // namespace ether_control

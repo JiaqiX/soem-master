@@ -79,19 +79,21 @@ bool EthercatManager::InitMasterNode() {
   char buffer[MAX_BUFF_SIZE];
   size_t name_size = ifname_.size();
   if (name_size > sizeof(buffer) - 1) {
-    ETHER_ERROR("Ifname {} exceeds "
-                "maximum size of {} bytes",
-                ifname_.c_str(), MAX_BUFF_SIZE);
+    ETHER_ERROR(
+        "Ifname {} exceeds "
+        "maximum size of {} bytes",
+        ifname_.c_str(), MAX_BUFF_SIZE);
     return false;
   }
   strncpy(buffer, ifname_.c_str(), MAX_BUFF_SIZE);
   ETHER_INFO("ifname_: {}", buffer);
 
   if (!ec_init(buffer)) {
-    ETHER_ERROR("Could not initialize "
-                "ethercat driver, "
-                "maybe No socket connection on {} or Should Execute as root",
-                buffer);
+    ETHER_ERROR(
+        "Could not initialize "
+        "ethercat driver, "
+        "maybe No socket connection on {} or Should Execute as root",
+        buffer);
     return false;
   }
 
@@ -131,9 +133,10 @@ bool EthercatManager::EnablePreSafeOP() {
   for (auto cnt : slave_list_) {
     if (ec_statecheck(cnt, EC_STATE_PRE_OP, EC_TIMEOUTSTATE * 4) !=
         EC_STATE_PRE_OP) {
-      ETHER_ERROR("Could not set "
-                  "EC_STATE_PRE_OP. slave no: {}",
-                  cnt);
+      ETHER_ERROR(
+          "Could not set "
+          "EC_STATE_PRE_OP. slave no: {}",
+          cnt);
       return false;
     }
   }
@@ -165,9 +168,10 @@ bool EthercatManager::EnableSafeOP() {
   for (auto cnt : slave_list_) {
     if (ec_statecheck(cnt, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4) !=
         EC_STATE_SAFE_OP) {
-      ETHER_ERROR("Could not set "
-                  "EC_STATE_SAFE_OP. slave no: {}",
-                  cnt);
+      ETHER_ERROR(
+          "Could not set "
+          "EC_STATE_SAFE_OP. slave no: {}",
+          cnt);
       return false;
     }
   }
@@ -200,16 +204,17 @@ bool EthercatManager::EnableOP() {
     ec_receive_processdata(EC_TIMEOUTRET);
     for (auto cnt : slave_list_) {
       ec_statecheck(cnt, EC_STATE_OPERATIONAL,
-                    20000); // 20 ms wait for state check
+                    20000);  // 20 ms wait for state check
     }
   } while (chk-- && (ec_slave[0].state != EC_STATE_OPERATIONAL));
 
   for (auto cnt : slave_list_) {
     if (ec_statecheck(cnt, EC_STATE_OPERATIONAL, EC_TIMEOUTSTATE) !=
         EC_STATE_OPERATIONAL) {
-      ETHER_ERROR("OPERATIONAL state "
-                  "not set. slave no: {}",
-                  cnt);
+      ETHER_ERROR(
+          "OPERATIONAL state "
+          "not set. slave no: {}",
+          cnt);
       return false;
     }
   }
@@ -237,10 +242,11 @@ bool EthercatManager::EnableOP() {
     uint32_t minimum_cycle_time = ReadSDO<uint32_t>(cnt, 0x1c32, 0x05);
     uint32_t calc_and_copy_time = ReadSDO<uint32_t>(cnt, 0x1c32, 0x06);
     uint32_t sync0_cycle_time = ReadSDO<uint32_t>(cnt, 0x1c32, 0x0a);
-    ETHER_INFO("slave {} SM output parameter: PDO syncmode {:2x}, cycle time "
-               "{} ns (min {}), sync0 cycle time {} ns, calc and copy time {}",
-               cnt, sync_mode, cycle_time, minimum_cycle_time, sync0_cycle_time,
-               calc_and_copy_time);
+    ETHER_INFO(
+        "slave {} SM output parameter: PDO syncmode {:2x}, cycle time "
+        "{} ns (min {}), sync0 cycle time {} ns, calc and copy time {}",
+        cnt, sync_mode, cycle_time, minimum_cycle_time, sync0_cycle_time,
+        calc_and_copy_time);
   }
 
   ETHER_INFO("Finished configuration successfully");
@@ -307,9 +313,10 @@ void EthercatManager::HandleErrors() {
 
   while (!stop_flag_.load()) {
     if (wkc < expected_wkc || ec_group[0].docheckstate) {
-      ETHER_ERROR("wkc < expected_wkc || ec_group[0].docheckstate, wkc: {}, "
-                  "expected_wkc: {}",
-                  wkc, expected_wkc);
+      ETHER_ERROR(
+          "wkc < expected_wkc || ec_group[0].docheckstate, wkc: {}, "
+          "expected_wkc: {}",
+          wkc, expected_wkc);
       ec_group[0].docheckstate = FALSE;
       ec_readstate();
       for (auto slave : slave_list_) {
@@ -447,4 +454,4 @@ void EthercatManager::SlaveConfig() {
   }
 }
 
-} // namespace ether_control
+}  // namespace ether_control

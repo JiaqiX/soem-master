@@ -1,8 +1,8 @@
 #include "slave_node.h"
 #include "string.h"
 
-#include "ethercat_utils.h"
 #include <sstream>
+#include "ethercat_utils.h"
 
 #include "log/ethercat_log.h"
 
@@ -250,15 +250,15 @@ int SlaveNode::InitPDOMap() {
       if (wkc > 0) {
         if ((iSM == 2) &&
             (tSM ==
-             2)) // SM2 has type 2 == mailbox out, this is a bug in the slave!
+             2))  // SM2 has type 2 == mailbox out, this is a bug in the slave!
         {
-          SMt_bug_add = 1; // try to correct, this works if the types are 0 1 2
-                           // 3 and should be 1 2 3 4
+          SMt_bug_add = 1;  // try to correct, this works if the types are 0 1 2
+                            // 3 and should be 1 2 3 4
         }
         if (tSM)
-          tSM += SMt_bug_add; // only add if SMt > 0
+          tSM += SMt_bug_add;  // only add if SMt > 0
 
-        if (tSM == 3) // outputs
+        if (tSM == 3)  // outputs
         {
           /* read the assign RXPDO */
           Tsize = PDOAssign(tSM, ECT_SDO_PDOASSIGN + iSM,
@@ -267,7 +267,7 @@ int SlaveNode::InitPDOMap() {
                             outputs_bo);
           outputs_bo += Tsize;
         }
-        if (tSM == 4) // inputs
+        if (tSM == 4)  // inputs
         {
           /* read the assign TXPDO */
           Tsize = PDOAssign(tSM, ECT_SDO_PDOASSIGN + iSM,
@@ -374,4 +374,4 @@ int SlaveNode::PDOAssign(uint8_t tSM, uint16_t PDOassign, int mapoffset,
   return bsize;
 }
 
-} // namespace ether_backend
+}  // namespace ether_backend

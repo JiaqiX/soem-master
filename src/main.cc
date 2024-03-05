@@ -44,7 +44,6 @@ int main(int argc, char *argv[]) {
       std::cout << "Unknown exception error" << std::endl;
     }
   } else {
-
     std::cout << "Usage: soem-master config_path" << std::endl
               << "config_path = ./config.yaml for example" << std::endl;
   }

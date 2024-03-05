@@ -29,21 +29,21 @@ typedef struct {
 } EtherConfig;
 
 class EthercatControllerError : public std::runtime_error {
-public:
+ public:
   explicit EthercatControllerError(const std::string &what)
       : std::runtime_error(what) {}
 };
 
 class EthercatController {
-public:
+ public:
   EthercatController();
   virtual ~EthercatController();
 
-private:
+ private:
   void HandleErrors();
   void LoopWorker();
 
-public:
+ public:
   void EtherInitMasterNode(const EtherConfig &cfg);
   void EtherRegisterNode(int32_t slave_no, std::shared_ptr<EtherNode> node_ptr,
                          PO2SOconfigFunc func);
@@ -71,7 +71,7 @@ public:
   std::vector<int32_t> GetSlaveLists() { return manager_->GetSlaveLists(); }
   uint16_t GetEtherNodeNum() { return ether_nodes_map_.size(); }
 
-public:
+ public:
   std::shared_ptr<EthercatManager> GetEtherManager() { return manager_; }
   std::shared_ptr<EtherNode> GetEtherNode(int32_t slave_no);
 
@@ -80,7 +80,7 @@ public:
   void WaitUntil(
       std::chrono::time_point<std::chrono::high_resolution_clock> end_time);
 
-private:
+ private:
   std::atomic_bool stop_flag_ = true;
   std::string ifname_;
   uint64_t cycle_time_;
@@ -94,9 +94,9 @@ private:
   std::shared_ptr<std::thread> cycle_thread_;
   std::shared_ptr<std::thread> handle_error_thread_;
 
-private:
+ private:
   std::map<int32_t, std::map<uint32_t, uint16_t>> slave_txpdo_map_;
   std::map<int32_t, std::map<uint32_t, uint16_t>> slave_rxpdo_map_;
 
-}; // class EthercatController
-} // namespace ether_control
+};  // class EthercatController
+}  // namespace ether_control

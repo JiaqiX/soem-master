@@ -29,12 +29,12 @@ typedef int (*PO2SOconfigFunc)(uint16_t);
 using CallbackFunc = std::function<void(void)>;
 
 class EthercatError : public std::runtime_error {
-public:
+ public:
   explicit EthercatError(const std::string &what) : std::runtime_error(what) {}
 };
 
 class EthercatManager {
-public:
+ public:
   EthercatManager(const std::string &ifname,
                   const std::vector<int32_t> &exclude_slave_list,
                   bool dc_enable = false,
@@ -50,10 +50,10 @@ public:
                        int64_t _shiftTime);
   void InitEthercatManager();
 
-protected:
+ protected:
   bool InitSoem();
 
-public:
+ public:
   bool InitMasterNode();
   bool EnablePreSafeOP();
   bool ConfigSlaveNode();
@@ -62,14 +62,14 @@ public:
   bool EnableOP();
   void ReleaseMasterNode();
 
-public:
+ public:
   std::vector<int32_t> GetSlaveLists() { return slave_list_; }
 
-public:
+ public:
   void HandleErrors();
   void LoopWorker();
 
-public:
+ public:
   // elmo driver specific config
   void SlaveConfig();
   void SetSlaveConfig(int slave_idx, PO2SOconfigFunc func);
@@ -93,16 +93,16 @@ public:
     sem_.WaitUntil(end_time);
   }
 
-public:
+ public:
   uint8_t iomap_[4096] = {0};
 
-protected:
+ protected:
   const std::string ifname_;
   int slave_num_ = 0;
 
   std::atomic_bool stop_flag_ = false;
   // cycle time
-  uint64_t period_ = 1000000; // 1 ms
+  uint64_t period_ = 1000000;  // 1 ms
   // dc
   bool dc_enable_ = false;
   // exclude first slave
@@ -124,4 +124,4 @@ protected:
   Sem sem_;
 };
 
-} // namespace ether_control
+}  // namespace ether_control

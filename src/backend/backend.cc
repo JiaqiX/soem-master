@@ -8,8 +8,8 @@
  */
 #include "backend.h"
 
-#include "yaml-cpp/yaml.h"
 #include <sstream>
+#include "yaml-cpp/yaml.h"
 
 #include "ethercat_utils.h"
 #include "slave_node.h"
@@ -104,7 +104,6 @@ std::string Display(const T &container) {
 }
 //
 std::string PrintEtherNodeList() {
-
   auto slave_list = g_controller.GetSlaveLists();
 
   return Display(slave_list);
@@ -118,12 +117,14 @@ void RegisterEtherNode(int32_t slave_no) {
 }
 //
 void SetEtherNodeRxPDOMap(int32_t slave_no, uint32_t index, uint16_t addr) {
-  ETHER_INFO("map rxpdo address: {}, index: {}, slave_no: {}", addr, index, slave_no);
+  ETHER_INFO("map rxpdo address: {}, index: {}, slave_no: {}", addr, index,
+             slave_no);
   g_controller.EtherSetSlaveNodeRxPDOMap(slave_no, index, addr);
 }
 //
 void SetEtherNodeTxPDOMap(int32_t slave_no, uint32_t index, uint16_t addr) {
-  ETHER_INFO("map txpdo address: {}, index: {}, slave_no: {}", addr, index, slave_no);
+  ETHER_INFO("map txpdo address: {}, index: {}, slave_no: {}", addr, index,
+             slave_no);
   g_controller.EtherSetSlaveNodeTxPDOMap(slave_no, index, addr);
 }
 //
@@ -149,14 +150,18 @@ std::string PrintEtherPDOMap(int32_t slave_no) {
 
   ss << "TXPDO:" << std::endl;
   ss << "name\tindex:sub\tbitlen\toffset\ttype" << std::endl;
-  for (auto info: slave_node->txpdo_assign_vec_) {
-    ss << std::format("{}\t0x{:4x}:0x{:2x}\t{}\t{}\t{}", info.name, info.index, info.sub_index, info.bit_len, info.offset, info.data_type) << std::endl;
+  for (auto info : slave_node->txpdo_assign_vec_) {
+    ss << std::format("{}\t0x{:4x}:0x{:2x}\t{}\t{}\t{}", info.name, info.index,
+                      info.sub_index, info.bit_len, info.offset, info.data_type)
+       << std::endl;
   }
 
   ss << "RXPDO:" << std::endl;
   ss << "name\tindex:sub\tbitlen\toffset\ttype" << std::endl;
-  for (auto info: slave_node->rxpdo_assign_vec_) {
-    ss << std::format("{}\t0x{:4x}:0x{:2x}\t{}\t{}\t{}", info.name, info.index, info.sub_index, info.bit_len, info.offset, info.data_type) << std::endl;
+  for (auto info : slave_node->rxpdo_assign_vec_) {
+    ss << std::format("{}\t0x{:4x}:0x{:2x}\t{}\t{}\t{}", info.name, info.index,
+                      info.sub_index, info.bit_len, info.offset, info.data_type)
+       << std::endl;
   }
 
   return ss.str();
@@ -175,4 +180,4 @@ std::string GetEtherNodeData(int32_t slave_no, const std::string &field_name) {
       std::dynamic_pointer_cast<SlaveNode>(g_controller.GetEtherNode(slave_no));
   return slave_node->GetInput(field_name);
 }
-} // namespace ether_backend
+}  // namespace ether_backend

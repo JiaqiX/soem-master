@@ -44,9 +44,10 @@ void EthercatController::EtherInitMasterNode(const EtherConfig &cfg) {
 
   manager_->InitMasterNode();
 
-  ETHER_INFO("parse ethercat cfg info: ifname: {}, cycle_time: {}, enable_dc: "
-             "{}, exclude_slave_list: [{}]",
-             ifname_, cycle_time_, enable_dc_, Display(exclude_slave_list_));
+  ETHER_INFO(
+      "parse ethercat cfg info: ifname: {}, cycle_time: {}, enable_dc: "
+      "{}, exclude_slave_list: [{}]",
+      ifname_, cycle_time_, enable_dc_, Display(exclude_slave_list_));
 }
 
 void EthercatController::EtherRegisterNode(int32_t slave_no,
@@ -67,24 +68,31 @@ void EthercatController::EtherSetSlaveNodeRxPDOMap(int32_t slave_no,
                                                    uint16_t addr) {
   slave_rxpdo_map_[slave_no][index] = addr;
 }
-void EthercatController::EtherEnablePreSafeOP() { if (!manager_->EnablePreSafeOP()) {
-  throw EthercatControllerError("enable pre safe op failed.");
-} }
-void EthercatController::EtherConfigSlaveNode() { if (!manager_->ConfigSlaveNode()) {
-  throw EthercatControllerError("config slave node failed.");
-} }
-void EthercatController::EtherEnableDC() { if (!manager_->EnableDC()) {
-  throw EthercatControllerError("enable op failed.");
-
-} }
-void EthercatController::EtherEnableSafeOP() { if (!manager_->EnableSafeOP()) {
-  throw EthercatControllerError("enbale safe op failed.");
-
-} }
-void EthercatController::EtherEnableOP() { if (!manager_->EnableOP()) {
-  throw EthercatControllerError("enable op failed.");
-
-} }
+void EthercatController::EtherEnablePreSafeOP() {
+  if (!manager_->EnablePreSafeOP()) {
+    throw EthercatControllerError("enable pre safe op failed.");
+  }
+}
+void EthercatController::EtherConfigSlaveNode() {
+  if (!manager_->ConfigSlaveNode()) {
+    throw EthercatControllerError("config slave node failed.");
+  }
+}
+void EthercatController::EtherEnableDC() {
+  if (!manager_->EnableDC()) {
+    throw EthercatControllerError("enable op failed.");
+  }
+}
+void EthercatController::EtherEnableSafeOP() {
+  if (!manager_->EnableSafeOP()) {
+    throw EthercatControllerError("enbale safe op failed.");
+  }
+}
+void EthercatController::EtherEnableOP() {
+  if (!manager_->EnableOP()) {
+    throw EthercatControllerError("enable op failed.");
+  }
+}
 void EthercatController::EtherStart() {
   if (!stop_flag_.load()) {
     ETHER_WARN("ethercat worker loop task already start.");
@@ -102,7 +110,7 @@ void EthercatController::EtherStart() {
 void EthercatController::EtherStop() {
   if (stop_flag_.load())
     return;
-  
+
   ETHER_INFO("stop ethercat worker loop task.");
 
   stop_flag_.store(true);
@@ -143,4 +151,4 @@ std::shared_ptr<EtherNode> EthercatController::GetEtherNode(int32_t slave_no) {
   return ether_nodes_map_[slave_no];
 }
 
-} // namespace ether_control
+}  // namespace ether_control

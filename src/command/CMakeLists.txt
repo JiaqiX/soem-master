@@ -3,8 +3,7 @@ string(REGEX REPLACE ".*/\(.*\)" "\\1" CUR_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Get namespace
 get_namespace(CUR_SUPERIOR_NAMESPACE)
-string(REPLACE "::" "_" CUR_SUPERIOR_NAMESPACE_UNDERLINE
-               ${CUR_SUPERIOR_NAMESPACE})
+string(REPLACE "::" "_" CUR_SUPERIOR_NAMESPACE_UNDERLINE ${CUR_SUPERIOR_NAMESPACE})
 
 # Set target name
 set(CUR_TARGET_NAME ${CUR_SUPERIOR_NAMESPACE_UNDERLINE}_${CUR_DIR})
@@ -25,21 +24,20 @@ target_sources(${CUR_TARGET_NAME} PRIVATE ${src})
 
 # Set include path of target
 target_include_directories(
-  ${CUR_TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
-                            $<INSTALL_INTERFACE:include>)
+  ${CUR_TARGET_NAME}
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+         $<INSTALL_INTERFACE:include>)
 
 # Set head files of target
-target_sources(
-  ${CUR_TARGET_NAME} INTERFACE FILE_SET HEADERS BASE_DIRS
-                               ${CMAKE_CURRENT_SOURCE_DIR} FILES ${head_files})
+target_sources(${CUR_TARGET_NAME} INTERFACE FILE_SET HEADERS BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} FILES ${head_files})
 
 # Set link libraries of target
-target_link_libraries(${CUR_TARGET_NAME}
-                      PUBLIC ${CUR_SUPERIOR_NAMESPACE}::backend)
+target_link_libraries(
+  ${CUR_TARGET_NAME}
+  PUBLIC ${CUR_SUPERIOR_NAMESPACE}::backend)
 
 # Set installation of target
-set_property(TARGET ${CUR_TARGET_NAME} PROPERTY EXPORT_NAME
-                                                ${CUR_TARGET_ALIAS_NAME})
+set_property(TARGET ${CUR_TARGET_NAME} PROPERTY EXPORT_NAME ${CUR_TARGET_ALIAS_NAME})
 install(
   TARGETS ${CUR_TARGET_NAME}
   EXPORT ${INSTALL_CONFIG_NAME}

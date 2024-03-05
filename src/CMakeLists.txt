@@ -20,14 +20,17 @@ target_sources(${CUR_TARGET_NAME} PRIVATE ${src})
 
 # Set include path of target
 target_include_directories(
-  ${CUR_TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
-                            $<INSTALL_INTERFACE:include>)
+  ${CUR_TARGET_NAME}
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+         $<INSTALL_INTERFACE:include>)
 
 # Set link libraries of target
 target_link_libraries(
   ${CUR_TARGET_NAME}
   PRIVATE yaml-cpp::yaml-cpp
-  PUBLIC soem-master::backend soem-master::frontend soem-master::command)
+  PUBLIC soem-master::backend
+         soem-master::frontend
+         soem-master::command)
 
 install(
   TARGETS ${CUR_TARGET_NAME}

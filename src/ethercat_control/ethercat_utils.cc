@@ -18,10 +18,11 @@ T ReadSDO(int32_t slave_no, uint16_t index, uint8_t subidx) {
   T val;
   l = sizeof(val);
   ret = ec_SDOread(slave_no, index, subidx, FALSE, &l, &val, EC_TIMEOUTRXM);
-  if (ret <= 0) { // ret = Workcounter from last slave response
-    ETHER_ERROR("Failed to read from ret: {}, slave_no: {}, index:0x{:04x}, "
-                "subidx:0x{:02x}",
-                ret, slave_no, index, subidx);
+  if (ret <= 0) {  // ret = Workcounter from last slave response
+    ETHER_ERROR(
+        "Failed to read from ret: {}, slave_no: {}, index:0x{:04x}, "
+        "subidx:0x{:02x}",
+        ret, slave_no, index, subidx);
   }
   return val;
 }
@@ -103,4 +104,4 @@ void DoubleToFixed(double f_input, int32_t *pValue, int32_t *pBase) {
     (*pValue) = (int32_t)(1.0 * f_input);
   }
 }
-} // namespace ether_control
+}  // namespace ether_control

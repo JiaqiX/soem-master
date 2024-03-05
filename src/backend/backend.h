@@ -52,4 +52,4 @@ extern void SetEtherNodeData(int32_t slave_no, const std::string &field_name,
 extern std::string GetEtherNodeData(int32_t slave_no,
                                     const std::string &field_name);
 
-} // namespace ether_backend
+}  // namespace ether_backend

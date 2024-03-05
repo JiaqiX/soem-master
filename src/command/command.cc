@@ -58,7 +58,6 @@ void Command::GetCommand() {
                  ::tolower);
 
   while (!iss.eof()) {
-
     std::string parameter;
     iss >> parameter;
     if (!parameter.empty())
@@ -171,9 +170,12 @@ void Command::PrintInfo(const std::vector<std::string> &paramters) {
 }
 
 std::map<std::string, CmdHandleFunc> Command::m_handle_map = {
-    {"help", Command::PrintHelp},       {"register", Command::RegisterSlave},
-    {"master", Command::MasterControl}, {"slave", Command::SlaveControl},
-    {"pdo", Command::PdoControl},       {"print", Command::PrintInfo},
+    {"help", Command::PrintHelp},
+    {"register", Command::RegisterSlave},
+    {"master", Command::MasterControl},
+    {"slave", Command::SlaveControl},
+    {"pdo", Command::PdoControl},
+    {"print", Command::PrintInfo},
 };
 
 void Command::ExecuteCommand() {
@@ -183,4 +185,4 @@ void Command::ExecuteCommand() {
   }
   return;
 }
-} // namespace ether_backend
+}  // namespace ether_backend

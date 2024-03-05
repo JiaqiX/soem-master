@@ -19,17 +19,17 @@ namespace ether_backend {
 using CmdHandleFunc = std::function<void(const std::vector<std::string> &)>;
 
 class Command {
-public:
+ public:
   Command();
   ~Command();
   void Run();
 
-public:
+ public:
   void GetCommand();
   bool ValidCommand();
   void ExecuteCommand();
 
-public:
+ public:
   static void PrintHelp(const std::vector<std::string> &paramters);
   static void MasterControl(const std::vector<std::string> &paramters);
   static void SlaveControl(const std::vector<std::string> &paramters);
@@ -37,7 +37,7 @@ public:
   static void PdoControl(const std::vector<std::string> &paramters);
   static void PrintInfo(const std::vector<std::string> &paramters);
 
-private:
+ private:
   std::string m_command;
   std::vector<std::string> m_parameters;
 
@@ -45,4 +45,4 @@ private:
   static const std::unordered_set<std::string> m_validCommand;
 };
 
-} // namespace ether_backend
+}  // namespace ether_backend

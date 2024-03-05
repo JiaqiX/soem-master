@@ -36,7 +36,8 @@ class Sem {
     count_--;
   }
 
-  void WaitUntil(std::chrono::time_point<std::chrono::high_resolution_clock> end_time) {
+  void WaitUntil(
+      std::chrono::time_point<std::chrono::high_resolution_clock> end_time) {
     std::unique_lock<std::mutex> lock(m_);
     cv_.wait_until(lock, end_time, [this]() -> bool { return count_ > 0; });
     count_--;

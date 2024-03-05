@@ -20,7 +20,7 @@ namespace ether_backend {
 
 using namespace ether_control;
 
-typedef struct data_info{
+typedef struct data_info {
   std::string name;
   uint16_t index;
   uint8_t sub_index;
@@ -28,7 +28,7 @@ typedef struct data_info{
   uint32_t offset;
   std::string data_type;
   data_info() {}
-  data_info(const data_info& other) {
+  data_info(const data_info &other) {
     name = other.name;
     index = other.index;
     sub_index = other.sub_index;
@@ -40,14 +40,14 @@ typedef struct data_info{
 } DataInfo;
 
 class SlaveNodeError : public std::runtime_error {
-public:
+ public:
   SlaveNodeError(const std::string &what, int slave_no)
       : std::runtime_error(what + " slave no: " + std::to_string(slave_no)) {}
   SlaveNodeError(const std::string &what) : std::runtime_error(what) {}
 };
 
 class SlaveNode : public EtherNode {
-public:
+ public:
   SlaveNode(std::weak_ptr<EthercatManager> manager, int32_t slave_no);
   virtual ~SlaveNode();
 
@@ -61,7 +61,7 @@ public:
   uint32_t GetProductCode();
   bool CheckProductCode(uint32_t code);
 
-private:
+ private:
   // field read
   bool GetInputBool(int32_t offset);
   int8_t GetInputInt8(int32_t offset);
@@ -84,11 +84,11 @@ private:
   void SetOutputInt64(int32_t offset, int64_t val);
   void SetOutputUint64(int32_t offset, uint64_t val);
 
-public:
+ public:
   std::string GetInput(const std::string &field_name);
   void SetOutput(const std::string &field_name, std::string strVal);
 
-private:
+ private:
   std::string dtype2string(uint16_t dtype);
   int InitPDOMap();
   /** Read PDO assign structure */
@@ -97,18 +97,18 @@ private:
   ec_ODlistt ODlist;
   ec_OElistt OElist;
 
-public:
+ public:
   std::map<std::string, DataInfo> txpdo_assign_map_;
   std::map<std::string, DataInfo> rxpdo_assign_map_;
 
   std::vector<DataInfo> txpdo_assign_vec_;
   std::vector<DataInfo> rxpdo_assign_vec_;
 
-private:
+ private:
   std::mutex mtx_input_;
   std::mutex mtx_output_;
 
   std::vector<uint8_t> inputs;
   std::vector<uint8_t> outputs;
 };
-} // namespace ether_backend
+}  // namespace ether_backend
