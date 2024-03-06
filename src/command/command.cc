@@ -4,7 +4,7 @@
  * @version:
  * @Date: 2024-03-04 16:23:34
  * @LastEditors: editorxu
- * @LastEditTime: 2024-03-06 10:18:38
+ * @LastEditTime: 2024-03-06 10:49:57
  */
 #include "command.h"
 
@@ -102,8 +102,8 @@ void Command::PrintHelp(const std::vector<std::string> &paramters) {
             << "        example: master start      启动主站进程" << std::endl
             << "        example: master stop       主站进程退出" << std::endl
             << "slave : slave control." << std::endl
-            << "        example: slave get 1 ${fieldname}      获取从站[1]的txpdo字段$field_name数据" << std::endl
-            << "        example: slave set 1 ${fieldname} 100  设置从站[1]的rxpdo字段$field_name数据为100" << std::endl
+            << "        example: slave pdo get 1 ${fieldname}      获取从站[1]的txpdo字段$field_name数据" << std::endl
+            << "        example: slave pdo set 1 ${fieldname} 100  设置从站[1]的rxpdo字段$field_name数据为100" << std::endl
             << "quit  : Quit" << std::endl;
 }
 
@@ -123,20 +123,36 @@ void Command::MasterControl(const std::vector<std::string> &paramters) {
   }
 }
 
+void SlavePDOControl(const std::vector<std::string> &paramters) {
+  std::string subCmd = paramters[1];
+  if (subCmd == "set" && paramters.size() == 5) {
+    int32_t slave_no = std::stoi(paramters[2]);
+    std::string field_name = paramters[3];
+    std::string strVal = paramters[4];
+    SetEtherNodeData(slave_no, field_name, strVal);
+  } else if (subCmd == "get" && paramters.size() == 4) {
+    int32_t slave_no = std::stoi(paramters[2]);
+    std::string field_name = paramters[3];
+    std::string data = GetEtherNodeData(slave_no, field_name);
+    std::cout << data << std::endl;
+  } else {
+    std::cout << "please check your command." << std::endl;
+  }
+}
+
+void SlaveSDOControl(const std::vector<std::string> &paramters) {
+}
+
 void Command::SlaveControl(const std::vector<std::string> &paramters) {
   if (paramters.empty())
     return;
   std::string subCmd = paramters[0];
-  if (subCmd == "set" && paramters.size() == 4) {
-    int32_t slave_no = std::stoi(paramters[1]);
-    std::string field_name = paramters[2];
-    std::string strVal = paramters[3];
-    SetEtherNodeData(slave_no, field_name, strVal);
-  } else if (subCmd == "get" && paramters.size() == 3) {
-    int32_t slave_no = std::stoi(paramters[1]);
-    std::string field_name = paramters[2];
-    std::string data = GetEtherNodeData(slave_no, field_name);
-    std::cout << data << std::endl;
+  if (subCmd == "pdo") {
+    SlavePDOControl(paramters);
+  } else if (subCmd == "sdo") {
+    SlaveSDOControl(paramters);
+  } else {
+    std::cout << "please check your command." << std::endl;
   }
 }
 

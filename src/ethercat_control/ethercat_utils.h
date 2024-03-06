@@ -1,3 +1,11 @@
+/*
+ * @Descripttion:
+ * @Author: editorxu
+ * @version:
+ * @Date: 2024-03-05 16:39:51
+ * @LastEditors: editorxu
+ * @LastEditTime: 2024-03-06 10:49:36
+ */
 #pragma once
 
 #include <cstdint>
@@ -17,6 +25,7 @@
 #include <ethercatprint.h>
 
 namespace ether_control {
+
 template <typename T>
 uint8_t WriteSDO(int slave_no, uint16_t index, uint8_t subidx, T value);
 template <typename T>
