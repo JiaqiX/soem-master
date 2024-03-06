@@ -4,7 +4,7 @@
  * @version:
  * @Date: 2024-03-04 16:23:34
  * @LastEditors: editorxu
- * @LastEditTime: 2024-03-05 11:45:27
+ * @LastEditTime: 2024-03-06 10:18:38
  */
 #include "command.h"
 
@@ -12,12 +12,12 @@
 #include <iostream>
 #include <sstream>
 
-#include "backend.h"
+#include "master.h"
 
 namespace ether_backend {
 
 const std::unordered_set<std::string> Command::m_validCommand = {
-    "help", "register", "master", "slave", "pdo", "print"};
+    "help", "register", "master", "slave", "print"};
 
 Command::Command() {}
 Command::~Command() {}
@@ -74,13 +74,36 @@ bool Command::ValidCommand() {
   return true;
 }
 
+std::map<std::string, CmdHandleFunc> Command::m_handle_map = {
+    {"help", Command::PrintHelp},
+    {"register", Command::RegisterSlave},
+    {"master", Command::MasterControl},
+    {"slave", Command::SlaveControl},
+    {"print", Command::PrintInfo},
+};
+
+void Command::ExecuteCommand() {
+  if (m_handle_map.find(m_command) != m_handle_map.end()) {
+    auto func = m_handle_map[m_command];
+    func(m_parameters);
+  }
+  return;
+}
+
 void Command::PrintHelp(const std::vector<std::string> &paramters) {
   std::cout << "help  : Help." << std::endl
             << "print : Print info." << std::endl
+            << "        example: print slavelist   打印扫描出的从站列表" << std::endl
+            << "        example: print pdomap 1    打印从站[1]的pdo映射" << std::endl
             << "register : register slave node with node id." << std::endl
+            << "        example: register 1        注册从站[1]进行控制,必须在master init之后调用才生效" << std::endl
             << "master : master control." << std::endl
+            << "        example: master init       主站进程初始化" << std::endl
+            << "        example: master start      启动主站进程" << std::endl
+            << "        example: master stop       主站进程退出" << std::endl
             << "slave : slave control." << std::endl
-            << "pdo : pdo control." << std::endl
+            << "        example: slave get 1 ${fieldname}      获取从站[1]的txpdo字段$field_name数据" << std::endl
+            << "        example: slave set 1 ${fieldname} 100  设置从站[1]的rxpdo字段$field_name数据为100" << std::endl
             << "quit  : Quit" << std::endl;
 }
 
@@ -91,15 +114,10 @@ void Command::MasterControl(const std::vector<std::string> &paramters) {
   if (subCmd == "init") {
     InitEther();
   } else if (subCmd == "start") {
-    EnablePreSafeOP();
-    ConfigSlaveNode();
-    EnableDC();
-    EnableSafeOP();
-    EnableOP();
-    InitSlaveNodes();
     StartEther();
   } else if (subCmd == "stop") {
     StopEther();
+    exit(EXIT_SUCCESS);
   } else {
     std::cout << "please check your command." << std::endl;
   }
@@ -131,25 +149,6 @@ void Command::RegisterSlave(const std::vector<std::string> &paramters) {
   RegisterEtherNode(slave_no);
 }
 
-void Command::PdoControl(const std::vector<std::string> &paramters) {
-  if (paramters.empty())
-    return;
-  std::string subCmd = paramters[0];
-  if (subCmd == "rx" && paramters.size() == 4) {
-    int32_t slave_no = std::stoi(paramters[1]);
-    uint32_t index = std::stoul(paramters[2]);
-    uint16_t addr = std::stoul(paramters[3], 0, 16);
-    SetEtherNodeRxPDOMap(slave_no, index, addr);
-  } else if (subCmd == "tx" && paramters.size() == 4) {
-    int32_t slave_no = std::stoi(paramters[1]);
-    uint32_t index = std::stoul(paramters[2]);
-    uint16_t addr = std::stoul(paramters[3], 0, 16);
-    SetEtherNodeTxPDOMap(slave_no, index, addr);
-  } else {
-    std::cout << "please check your command." << std::endl;
-  }
-}
-
 void Command::PrintInfo(const std::vector<std::string> &paramters) {
   if (paramters.empty())
     return;
@@ -164,20 +163,4 @@ void Command::PrintInfo(const std::vector<std::string> &paramters) {
   }
 }
 
-std::map<std::string, CmdHandleFunc> Command::m_handle_map = {
-    {"help", Command::PrintHelp},
-    {"register", Command::RegisterSlave},
-    {"master", Command::MasterControl},
-    {"slave", Command::SlaveControl},
-    {"pdo", Command::PdoControl},
-    {"print", Command::PrintInfo},
-};
-
-void Command::ExecuteCommand() {
-  if (m_handle_map.find(m_command) != m_handle_map.end()) {
-    auto func = m_handle_map[m_command];
-    func(m_parameters);
-  }
-  return;
-}
 }  // namespace ether_backend

@@ -2,8 +2,7 @@
 set_root_namespace("soem-master")
 
 add_subdirectory(ethercat_control)
-add_subdirectory(frontend)
-add_subdirectory(backend)
+add_subdirectory(master)
 add_subdirectory(command)
 
 # Set target name
@@ -28,8 +27,7 @@ target_include_directories(
 target_link_libraries(
   ${CUR_TARGET_NAME}
   PRIVATE yaml-cpp::yaml-cpp
-  PUBLIC soem-master::backend
-         soem-master::frontend
+  PUBLIC soem-master::master
          soem-master::command)
 
 install(

@@ -4,15 +4,16 @@
  * @version:
  * @Date: 2024-02-29 14:15:44
  * @LastEditors: editorxu
- * @LastEditTime: 2024-03-05 11:12:52
+ * @LastEditTime: 2024-03-06 10:01:07
  */
-#include "backend.h"
+#include "master.h"
 
 #include <sstream>
 #include "yaml-cpp/yaml.h"
 
 #include "ethercat_utils.h"
 #include "slave_node.h"
+#include "utils.h"
 
 #include "log/ethercat_log.h"
 
@@ -105,60 +106,31 @@ static int SlavePDOSetup(uint16_t slave) {
   return 0;
 }
 
-template <typename T>
-  requires(requires(T t) {
-             typename T::iterator;
-             t.begin();
-             t.end();
-           })
-std::string Display(const T &container) {
-  std::stringstream ss;
-  for (auto it = container.begin(); it != container.end(); ++it)
-    ss << *it << ((it < container.end() - 1) ? ", " : "");
-  return ss.str();
-}
-//
-std::string PrintEtherNodeList() {
-  auto slave_list = g_controller.GetSlaveLists();
-
-  return "[" + Display(slave_list) + "]";
-}
 //
 void RegisterEtherNode(int32_t slave_no) {
   std::shared_ptr<SlaveNode> node =
       std::make_shared<SlaveNode>(g_controller.GetEtherManager(), slave_no);
   g_controller.EtherRegisterNode(slave_no, node, SlavePDOSetup);
 }
-//
-void SetEtherNodeRxPDOMap(int32_t slave_no, uint32_t index, uint16_t addr) {
-  ETHER_INFO("map rxpdo address: {}, index: {}, slave_no: {}", addr, index,
-             slave_no);
-  g_controller.EtherSetSlaveNodeRxPDOMap(slave_no, index, addr);
-}
-//
-void SetEtherNodeTxPDOMap(int32_t slave_no, uint32_t index, uint16_t addr) {
-  ETHER_INFO("map txpdo address: {}, index: {}, slave_no: {}", addr, index,
-             slave_no);
-  g_controller.EtherSetSlaveNodeTxPDOMap(slave_no, index, addr);
-}
 
-void InitSlaveNodes() {
+//
+void StartEther() {
+  g_controller.EtherEnablePreSafeOP();
+  g_controller.EtherConfigSlaveNode();
+  g_controller.EtherEnableDC();
+  g_controller.EtherEnableSafeOP();
+  g_controller.EtherEnableOP();
   g_controller.EtherInitSlaveNodes();
+  g_controller.EtherStart();
 }
-//
-void EnablePreSafeOP() { g_controller.EtherEnablePreSafeOP(); }
-//
-void ConfigSlaveNode() { g_controller.EtherConfigSlaveNode(); }
-//
-void EnableDC() { g_controller.EtherEnableDC(); }
-//
-void EnableSafeOP() { g_controller.EtherEnableSafeOP(); }
-//
-void EnableOP() { g_controller.EtherEnableOP(); }
-//
-void StartEther() { g_controller.EtherStart(); }
 //
 void StopEther() { g_controller.EtherStop(); }
+
+//
+std::string PrintEtherNodeList() {
+  auto slave_list = g_controller.GetSlaveLists();
+  return "[" + Display(slave_list) + "]";
+}
 //
 std::string PrintEtherPDOMap(int32_t slave_no) {
   auto slave_node =

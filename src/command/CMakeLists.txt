@@ -34,7 +34,7 @@ target_sources(${CUR_TARGET_NAME} INTERFACE FILE_SET HEADERS BASE_DIRS ${CMAKE_C
 # Set link libraries of target
 target_link_libraries(
   ${CUR_TARGET_NAME}
-  PUBLIC ${CUR_SUPERIOR_NAMESPACE}::backend)
+  PUBLIC ${CUR_SUPERIOR_NAMESPACE}::master)
 
 # Set installation of target
 set_property(TARGET ${CUR_TARGET_NAME} PROPERTY EXPORT_NAME ${CUR_TARGET_ALIAS_NAME})

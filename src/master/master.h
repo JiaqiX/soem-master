@@ -4,7 +4,7 @@
  * @version:
  * @Date: 2024-03-01 16:31:01
  * @LastEditors: editorxu
- * @LastEditTime: 2024-03-05 11:11:54
+ * @LastEditTime: 2024-03-06 10:00:43
  */
 #pragma once
 
@@ -23,30 +23,13 @@ extern void PreInitEther(const std::string &config_path);
 //
 extern void InitEther();
 //
-extern std::string PrintEtherNodeList();
-//
 extern void RegisterEtherNode(int32_t slave_no);
-//
-extern void SetEtherNodeRxPDOMap(int32_t slave_no, uint32_t index,
-                                 uint16_t addr);
-extern void SetEtherNodeTxPDOMap(int32_t slave_no, uint32_t index,
-                                 uint16_t addr);
-//
-extern void InitSlaveNodes();
-//
-extern void EnablePreSafeOP();
-//
-extern void ConfigSlaveNode();
-//
-extern void EnableDC();
-//
-extern void EnableSafeOP();
-//
-extern void EnableOP();
 //
 extern void StartEther();
 //
 extern void StopEther();
+//
+extern std::string PrintEtherNodeList();
 //
 extern std::string PrintEtherPDOMap(int32_t slave_no);
 //

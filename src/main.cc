@@ -4,7 +4,7 @@
  * @version:
  * @Date: 2024-03-01 17:41:55
  * @LastEditors: editorxu
- * @LastEditTime: 2024-03-04 16:59:30
+ * @LastEditTime: 2024-03-06 09:51:37
  */
 
 #include <stdio.h>
@@ -13,8 +13,7 @@
 #include <iostream>
 #include <string>
 
-#include "backend.h"
-#include "frontend.h"
+#include "master.h"
 
 #include "command/command.h"
 

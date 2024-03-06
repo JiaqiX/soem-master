@@ -4,7 +4,7 @@
  * @version:
  * @Date: 2024-03-04 16:23:52
  * @LastEditors: editorxu
- * @LastEditTime: 2024-03-05 10:41:31
+ * @LastEditTime: 2024-03-06 10:02:34
  */
 #pragma once
 
@@ -37,12 +37,12 @@ class Command {
   static void PdoControl(const std::vector<std::string> &paramters);
   static void PrintInfo(const std::vector<std::string> &paramters);
 
+  static std::map<std::string, CmdHandleFunc> m_handle_map;
+  static const std::unordered_set<std::string> m_validCommand;
+
  private:
   std::string m_command;
   std::vector<std::string> m_parameters;
-
-  static std::map<std::string, CmdHandleFunc> m_handle_map;
-  static const std::unordered_set<std::string> m_validCommand;
 };
 
 }  // namespace ether_backend
